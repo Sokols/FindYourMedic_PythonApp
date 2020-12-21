@@ -25,13 +25,3 @@ def get_center_coordinates(loc_lat, loc_long, dest_lat=None, dest_long=None):
     if dest_lat:
         coordinates = [(loc_lat + dest_lat) / 2, (loc_long + dest_long) / 2]
     return coordinates
-
-
-def get_zoom(distance):
-    if distance <= 100:
-        return 8
-    elif 100 < distance <= 5000:
-        return 4
-    else:
-        return 2
-
