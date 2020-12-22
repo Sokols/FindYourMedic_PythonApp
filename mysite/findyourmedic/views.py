@@ -1,67 +1,54 @@
 import folium
 from django.shortcuts import render
-from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 
 from .forms import MeasurementModelForm
-from .utils import get_geo, get_center_coordinates
+from .models import Station
+from .utils import get_center_coordinates, get_destination_for_location
 
 
 def calculate_distance_view(request):
     # initial values
     distance = None
-    destination = None
+    location = None
 
     form = MeasurementModelForm(request.POST or None)
     geo_locator = Nominatim(user_agent='findyourmedic')
 
-    # ip = get_ip_address(request)
-    ip = '2.23.108.1'
-    location_country, location_city, location_latitude, location_longitude = get_geo(ip)
-    location = geo_locator.geocode(location_city)
-
-    # setting coordinates of location
-    location_point = (location_latitude, location_longitude)
-
-    # setting folium map
-    folium_map = folium.Map(location=(location_latitude, location_longitude))
-
-    # location marker
-    folium.Marker([location_latitude, location_longitude], tooltip='click here for more',
-                  popup=location_city['city'],
-                  icon=folium.Icon(color='purple')).add_to(folium_map)
+    folium_map = folium.Map()
 
     if form.is_valid():
         instance = form.save(commit=False)
-        destination = geo_locator.geocode(form.cleaned_data.get('location'))
+        location = geo_locator.geocode(form.cleaned_data.get('location'))
 
-        # setting coordinates of destination
-        destination_latitude = destination.latitude
-        destination_longitude = destination.longitude
-        destination_point = (destination_latitude, destination_longitude)
+        # get nearest station data
+        data = get_destination_for_location(location)
+        station = data['station']
+        distance = data['distance']
 
-        # distance calculation
-        distance = round(geodesic(location_point, destination_point).km, 2)
+        # set location and station points
+        location_point = (location.latitude, location.longitude)
 
         # setting folium map
         folium_map = folium.Map(location=get_center_coordinates(
-            location_latitude, location_longitude, destination_latitude, destination_longitude))
+            location.latitude, location.longitude, station.latitude, station.longitude))
 
         # location marker
-        folium.Marker([location_latitude, location_longitude], tooltip='click here for more',
-                      popup=location_city['city'],
+        folium.Marker(location_point, tooltip='Click here for more!',
+                      popup=location.address,
                       icon=folium.Icon(color='purple')).add_to(folium_map)
 
-        # destination marker
-        folium.Marker([destination_latitude, destination_longitude], tooltip='click here for more', popup=destination,
+        # station marker
+        folium.Marker([station.latitude, station.longitude], tooltip='Click here for more!', popup=station.station_name,
                       icon=folium.Icon(color='red', icon='cloud')).add_to(folium_map)
 
         # map zoom scale
-        folium_map.fit_bounds(bounds=[(location_latitude, location_longitude),
-                                      (destination_latitude, destination_longitude)])
+        folium_map.fit_bounds(bounds=[location_point,
+                                      (station.latitude, station.longitude)])
 
         # draw the line between location and destination
-        line = folium.PolyLine(locations=[location_point, destination_point], weight=5, color='blue')
+        line = folium.PolyLine(locations=[location_point, (station.latitude, station.longitude)], weight=5,
+                               color='blue')
         folium_map.add_child(line)
 
         instance.location = location
@@ -73,7 +60,7 @@ def calculate_distance_view(request):
     # dictionary used in the template
     context = {
         'distance': distance,
-        'destination': destination,
+        'location': location,
         'form': form,
         'map': folium_map,
     }
