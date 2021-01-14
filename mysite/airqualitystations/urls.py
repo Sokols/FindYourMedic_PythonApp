@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import calculate_distance_view
+from .views import find_station_view
 
 app_name = 'airqualitystations'
 urlpatterns = [
-    path('', calculate_distance_view, name='calculate-view')
+    path('', find_station_view)
 ]
