@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('airqualitystations', '0003_auto_20201222_1800'),
+        ('placefinder', '0003_auto_20201222_1800'),
     ]
 
     operations = [

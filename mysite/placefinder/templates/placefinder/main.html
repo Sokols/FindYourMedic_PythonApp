@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Calculate distance
+Place finder
 {% endblock title %}
 
 {% block content %}
@@ -43,8 +43,14 @@ Calculate distance
 
 <form action="" method="POST" autocomplete="off">
     {% csrf_token %}
-    {{ form | crispy }}
-    <br>
+    {% for field in form %}
+    <div class="form-group">
+        <div class="col-sm-8">
+            {{ field | as_crispy_field }}
+            <p>
+        </div>
+    </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">CHECK</button>
 </form>
 
@@ -60,6 +66,7 @@ Calculate distance
     $(window).on('load', function(){
         $('#exampleModal').modal('show')
     })
+
 </script>
 {% endif %}
 

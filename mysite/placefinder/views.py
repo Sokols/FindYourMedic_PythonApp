@@ -1,14 +1,12 @@
 import folium
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
 from geopy.geocoders import Nominatim
 
 from .forms import MeasurementModelForm
 from .utils import get_destination_for_localization, prepare_map
 
 
-def find_station_view(request):
+def find_place_view(request):
     """
     Method is the main view of site - finds the nearest air quality station from typed location.
     :param request: request from site
@@ -19,7 +17,7 @@ def find_station_view(request):
     localization = None
     station = None
     form = MeasurementModelForm(request.POST or None)
-    geo_locator = Nominatim(user_agent='airqualitystations')
+    geo_locator = Nominatim(user_agent='placefinder')
     folium_map = folium.Map()
 
     if form.is_valid():
@@ -53,4 +51,4 @@ def find_station_view(request):
         'map': folium_map,
     }
 
-    return render(request, 'airqualitystations/main.html', context)
+    return render(request, 'placefinder/main.html', context)

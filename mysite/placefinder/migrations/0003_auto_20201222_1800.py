@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('airqualitystations', '0002_auto_20201215_1937'),
+        ('placefinder', '0002_auto_20201215_1937'),
     ]
 
     operations = [
@@ -42,12 +42,12 @@ class Migration(migrations.Migration):
                 ('latitude', models.CharField(max_length=10)),
                 ('longitude', models.CharField(max_length=10)),
                 ('address_street', models.CharField(max_length=50)),
-                ('city', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='airqualitystations.city')),
+                ('city', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='placefinder.city')),
             ],
         ),
         migrations.AddField(
             model_name='city',
             name='commune',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='airqualitystations.commune'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='placefinder.commune'),
         ),
     ]

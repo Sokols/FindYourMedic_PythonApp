@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Measurement(models.Model):
+    content_type = models.CharField(max_length=50)
+    path_type = models.CharField(max_length=50)
     localization = models.CharField(max_length=500)
     station = models.CharField(max_length=500)
     distance = models.DecimalField(max_digits=10, decimal_places=2)
