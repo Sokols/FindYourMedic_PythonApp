@@ -1,11 +1,8 @@
 from django import forms
-from .models import Measurement
+from .models import Measurement, CONTENT_TYPE_CHOICES, PATH_TYPE_CHOICES
 
 
 class MeasurementModelForm(forms.ModelForm):
-    CONTENT_TYPE_CHOICES = [('medic', 'Medical team'), ('station', 'Air quality station')]
-    PATH_TYPE_CHOICES = [('line', 'Straight line'), ('route', 'Full route')]
-
     content_type = forms.ChoiceField(label='What do you want to find?',
                                      choices=CONTENT_TYPE_CHOICES, required=False)
     path_type = forms.ChoiceField(label='What should the marked route look like?',

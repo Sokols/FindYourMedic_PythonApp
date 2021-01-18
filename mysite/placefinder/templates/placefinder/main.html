@@ -14,7 +14,7 @@ Place finder
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel" style="color:black">
-                    The nearest station from:
+                    The nearest destination from:
                     <br>
                     <u>{{ localization }}</u>
                 </h5>
@@ -24,15 +24,15 @@ Place finder
             </div>
             <div class="modal-body">
                 <p style="color:black">
-                    <b>Station name:</b> {{ station.station_name }}
-                    <br>
-                    <b>City:</b> {{ station.city.name }}
-                    {% if station.address_street is not None %}
-                    - {{ station.address_street }}
-                    {% endif %}
-                    {% if station.address_street is None %}
-                    - no exact address
-                    {% endif %}
+                    <b>Destination name:</b> {{ destination }}
+<!--                    <br>-->
+<!--                    <b>City:</b> {{ station.city.name }}-->
+<!--                    {% if station.address_street is not None %}-->
+<!--                    - {{ station.address_street }}-->
+<!--                    {% endif %}-->
+<!--                    {% if station.address_street is None %}-->
+<!--                    - no exact address-->
+<!--                    {% endif %}-->
                     <br>
                     <b>Distance:</b> {{ distance }} km
                 </p>
