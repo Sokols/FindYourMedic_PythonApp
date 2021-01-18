@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Calculate distance
+Place finder
 {% endblock title %}
 
 {% block content %}
@@ -14,7 +14,7 @@ Calculate distance
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel" style="color:black">
-                    The nearest station from:
+                    The nearest destination from:
                     <br>
                     <u>{{ localization }}</u>
                 </h5>
@@ -24,15 +24,15 @@ Calculate distance
             </div>
             <div class="modal-body">
                 <p style="color:black">
-                    <b>Station name:</b> {{ station.station_name }}
-                    <br>
-                    <b>City:</b> {{ station.city.name }}
-                    {% if station.address_street is not None %}
-                    - {{ station.address_street }}
-                    {% endif %}
-                    {% if station.address_street is None %}
-                    - no exact address
-                    {% endif %}
+                    <b>Destination name:</b> {{ destination }}
+<!--                    <br>-->
+<!--                    <b>City:</b> {{ station.city.name }}-->
+<!--                    {% if station.address_street is not None %}-->
+<!--                    - {{ station.address_street }}-->
+<!--                    {% endif %}-->
+<!--                    {% if station.address_street is None %}-->
+<!--                    - no exact address-->
+<!--                    {% endif %}-->
                     <br>
                     <b>Distance:</b> {{ distance }} km
                 </p>
@@ -43,8 +43,14 @@ Calculate distance
 
 <form action="" method="POST" autocomplete="off">
     {% csrf_token %}
-    {{ form | crispy }}
-    <br>
+    {% for field in form %}
+    <div class="form-group">
+        <div class="col-sm-8">
+            {{ field | as_crispy_field }}
+            <p>
+        </div>
+    </div>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">CHECK</button>
 </form>
 
@@ -60,6 +66,7 @@ Calculate distance
     $(window).on('load', function(){
         $('#exampleModal').modal('show')
     })
+
 </script>
 {% endif %}
 

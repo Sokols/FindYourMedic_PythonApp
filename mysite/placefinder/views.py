@@ -1,25 +1,24 @@
 import folium
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
 from geopy.geocoders import Nominatim
 
 from .forms import MeasurementModelForm
+from .models import CONTENT_TYPE_CHOICES
 from .utils import get_destination_for_localization, prepare_map
 
 
-def find_station_view(request):
+def find_place_view(request):
     """
-    Method is the main view of site - finds the nearest air quality station from typed location.
+    Method is the main view of site - finds the nearest chosen destination.
     :param request: request from site
     :return: render of site
     """
     # initial values
     distance = None
     localization = None
-    station = None
+    destination = None
     form = MeasurementModelForm(request.POST or None)
-    geo_locator = Nominatim(user_agent='airqualitystations')
+    geo_locator = Nominatim(user_agent='placefinder')
     folium_map = folium.Map()
 
     if form.is_valid():
@@ -28,17 +27,19 @@ def find_station_view(request):
         # check if typed localization really exists
         if localization:
 
-            # get the nearest station data
-            station_dict = get_destination_for_localization(localization)
-            station = station_dict['station']
-            distance = station_dict['distance']
+            content_type = form.cleaned_data.get('content_type')
+            path_type = form.cleaned_data.get('path_type')
+            # get the nearest destination data
+            destination_dict = get_destination_for_localization(localization, content_type)
+            destination = destination_dict['destination']
+            distance = destination_dict['distance']
 
-            folium_map = prepare_map(localization, station)
+            folium_map = prepare_map(localization, destination, path_type)
 
             # save data into local database
             instance = form.save(commit=False)
             instance.localization = localization
-            instance.station = station.station_name
+            instance.destination = destination.station_name     # !!!
             instance.distance = distance
             instance.save()
 
@@ -47,10 +48,10 @@ def find_station_view(request):
     # dictionary used in the template
     context = {
         'distance': distance,
-        'station': station,
+        'destination': destination,
         'localization': localization,
         'form': form,
         'map': folium_map,
     }
 
-    return render(request, 'airqualitystations/main.html', context)
+    return render(request, 'placefinder/main.html', context)
