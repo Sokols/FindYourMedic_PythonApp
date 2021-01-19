@@ -1,16 +1,19 @@
-import folium
-import requests
-# import osmnx as ox
-# import networkx as nx
+import csv
+import os
+from typing import List
 
+import folium
+import networkx as nx
+import osmnx as ox
+import requests
 from geopy.distance import geodesic
 
-from .models import Station, CONTENT_TYPE_CHOICES, PATH_TYPE_CHOICES
+from .models import Station, CONTENT_TYPE_CHOICES, PATH_TYPE_CHOICES, Destination
 
 
 def get_center_coordinates(loc_lat, loc_long, dest_lat=None, dest_long=None):
     """
-    Method calculates a center point of two or one other points.
+    Method calculates a center point of two or one point.
     :param loc_lat: location latitude
     :param loc_long: location longitude
     :param dest_lat: destination longitude (optional)
@@ -30,15 +33,32 @@ def get_stations_list():
     """
     api = "http://api.gios.gov.pl/pjp-api/rest/station/findAll"
     data = requests.get(api).json()
-    station_list = list()
+    station_dest_list: List[Destination] = list()
     for obj in data:
         station = Station(obj)
-        station_list.append(station)
-    return station_list
+        station_dest_list.append(Destination(name=station.station_name,
+                                             address=station.address_street,
+                                             city=station.city.name,
+                                             latitude=station.latitude,
+                                             longitude=station.longitude))
+
+    return station_dest_list
 
 
 def get_medicals_list():
-    pass
+    file = os.path.dirname(os.path.abspath(__file__)) + '\\data\\rejestr.csv'
+    medical_dest_list: List[Destination] = list()
+    with open(file, 'r', encoding='utf-8') as file:
+        csv_reader = csv.reader(file, delimiter=';')
+        next(csv_reader)
+        for i, row in enumerate(csv_reader):
+            medical_dest_list.append(Destination(name=row[0],
+                                                 city=row[4],
+                                                 address=row[4] + " " + row[5] + " " + row[6],
+                                                 latitude=float(row[7]),
+                                                 longitude=float(row[8])))
+        file.close()
+    return medical_dest_list
 
 
 def get_destination_for_localization(localization, content_type):
@@ -57,7 +77,7 @@ def get_destination_for_localization(localization, content_type):
 
     # MEDICALS
     if content_type == CONTENT_TYPE_CHOICES[0][0]:
-        destinations = get_stations_list()          # do zmiany!
+        destinations = get_medicals_list()
 
     # STATIONS
     elif content_type == CONTENT_TYPE_CHOICES[1][0]:
@@ -98,10 +118,10 @@ def prepare_map(localization, destination, path_type):
                   popup=localization.address,
                   icon=folium.Icon(color='red', icon='home')).add_to(folium_map)
 
-    # station marker
+    # destination marker
     folium.Marker(destination_point,
                   tooltip='Click here for more!',
-                  popup=destination.station_name,
+                  popup=destination.name,
                   icon=folium.Icon(color='blue', icon='flash')).add_to(folium_map)
 
     # map zoom scale
@@ -115,7 +135,11 @@ def prepare_map(localization, destination, path_type):
 
     # ROUTE
     elif path_type == PATH_TYPE_CHOICES[1][0]:
-        folium_map.add_child(folium.PolyLine(locations=[location_point, destination_point],
-                                             weight=3,
-                                             color='red'))          # do zmiany !!!
+        ox.config(log_console=True, use_cache=True)
+        graph = ox.graph_from_point(location_point, dist_type='network', dist=3000)
+        location_node = ox.get_nearest_node(graph, location_point)
+        destination_node = ox.get_nearest_node(graph, destination_point)
+        route = nx.shortest_path(graph, location_node, destination_node)
+        ox.plot_route_folium(graph, route, folium_map)
+
     return folium_map

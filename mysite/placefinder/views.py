@@ -39,7 +39,7 @@ def find_place_view(request):
             # save data into local database
             instance = form.save(commit=False)
             instance.localization = localization
-            instance.destination = destination.station_name     # !!!
+            instance.destination = destination.name
             instance.distance = distance
             instance.save()
 

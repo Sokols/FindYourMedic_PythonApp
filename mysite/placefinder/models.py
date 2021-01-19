@@ -28,10 +28,10 @@ class Commune:
         self.district_name = dict['districtName']
         self.province_name = dict['provinceName']
 
+
 class City:
     city_id: int
     name: str
-
     commune: Commune
 
     def __init__(self, dict, *args, **entries):
@@ -60,3 +60,21 @@ class Station:
 
     def __str__(self):
         return f"{self.station_name} - {self.address_street}"
+
+
+class Destination:
+    name: str
+    city: str
+    address: str
+    latitude: float
+    longitude: float
+
+    def __init__(self, name, city, address, latitude, longitude):
+        self.name = name
+        self.city = city
+        self.address = address
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def __str__(self):
+        return f"{self.name} - {self.city} {self.address}"
