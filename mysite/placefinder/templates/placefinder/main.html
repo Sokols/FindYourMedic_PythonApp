@@ -24,15 +24,15 @@ Place finder
             </div>
             <div class="modal-body">
                 <p style="color:black">
-                    <b>Destination name:</b> {{ destination }}
-<!--                    <br>-->
-<!--                    <b>City:</b> {{ station.city.name }}-->
-<!--                    {% if station.address_street is not None %}-->
-<!--                    - {{ station.address_street }}-->
-<!--                    {% endif %}-->
-<!--                    {% if station.address_street is None %}-->
-<!--                    - no exact address-->
-<!--                    {% endif %}-->
+                    <b>Destination name:</b> {{ destination.name }}
+                    <br>
+                    <b>City:</b> {{ destination.city }}
+                    {% if destination.address is not None %}
+                    - {{ destination.address }}
+                    {% endif %}
+                    {% if destination.address is None %}
+                    - no exact address
+                    {% endif %}
                     <br>
                     <b>Distance:</b> {{ distance }} km
                 </p>
