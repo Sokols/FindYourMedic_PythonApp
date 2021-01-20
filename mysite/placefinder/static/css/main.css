@@ -12,3 +12,7 @@ body {
     padding-right: 200px;
     color: #FFF;
 }
+
+.ajaxProgress {
+    display: none;
+}
