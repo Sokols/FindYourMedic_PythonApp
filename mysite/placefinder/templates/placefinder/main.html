@@ -51,8 +51,14 @@ Place finder
         </div>
     </div>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">CHECK</button>
+    <button type="submit" class="btn btn-primary" id="checkButton">CHECK</button>
 </form>
+
+<div id="spinner-box" class="text-center m3 ajaxProgress">
+    <h6>Please wait...</h6>
+    <div class="spinner-grow text-light" role="status"></div>
+</div>
+<div id="data-box" class="text-center m3"></div>
 
 <br>
 
@@ -69,5 +75,21 @@ Place finder
 
 </script>
 {% endif %}
+
+<script>
+    $(document).ready(function() {
+        $("#checkButton").on("click", function() {
+            $.ajax({
+                type:"GET",
+                url:"",
+
+                beforeSend: function() {
+                    $("#spinner-box").show();
+                },
+            });
+        });
+    });
+
+</script>
 
 {% endblock content %}
